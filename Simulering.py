@@ -14,14 +14,14 @@ import Data_plotting as DP
 #
 ###################################################
 
-def RK4(f, K, t0, z0, t_final, N):
+def RK4(f, K, t0, z_0, t_final, N):
     """
-    This function performs RK4 on the function 'f' with initial values in 'z0',
+    This function performs RK4 on the function 'f' with initial values in 'z_0',
     from 't0' to 't_final' with 'N' steps.
     """
     h = (t_final - t0)/N                        # Define stepsize
-    t = [t0]; z = [z0]                          # Define lists of time and states at given time with inital values stored
-    tn = t0; zn = z0                            # Define stepvariables with initial values
+    t = [t0]; z = [z_0]                          # Define lists of time and states at given time with inital values stored
+    tn = t0; zn = z_0                            # Define stepvariables with initial values
     for k in range(N):
         k1 = f(zn, K)                           # The following four lines calculates k1, k2, k3 and k4 used for RK4
         k2 = f(zn + h*k1/2, K)
@@ -36,11 +36,11 @@ def f(z, K):
     """
     This function calculates zdot from the given statevector 'z' and the given gain matrix 'K'
     """
-    u=-float(K.dot(z))  # Calculate control-law from previous output
+    u=-K.dot(z)[0,0]    # Calculate control-law from previous output
     z1dot = z[2,0]
     z2dot = z[3,0]
-    z3dot = (mp*g*np.sin(z[1,0])*np.cos(z[1,0])+((a1*z[3,0]+np.tanh(z[3,0])*Ffp)/l)*np.cos(z[1,0])-mp*l*z[3,0]**2*np.sin(z[1,0])+ np.tanh(z[2,0])*Ffc-u)/(mc+mp-mp*np.cos(z[1,0])**2)
-    z4dot = (g*np.sin(z[1,0]))/l + (a1*z[3,0]+np.tanh(z[3,0])*Ffp)/mp*l*l + (np.cos(z[1,0])/l)*(mp*g*np.sin(z[1,0])*np.cos(z[1,0])+((a1*z[3,0]+np.tanh(z[3,0])*Ffp)/l)*np.cos(z[1,0])-mp*l*z[3,0]**2*np.sin(z[1,0])+np.tanh(z[2,0])*Ffc-u)/(mc+mp-mp*np.cos(z[1,0])**2)
+    z3dot = (m_p*g*np.sin(z[1,0])*np.cos(z[1,0])+((alpha*z[3,0]+np.tanh(z[3,0])*F_f2)/l)*np.cos(z[1,0])-m_p*l*z[3,0]**2*np.sin(z[1,0])+ np.tanh(z[2,0])*F_f1-u)/(m_c+m_p-m_p*np.cos(z[1,0])**2)
+    z4dot = (g*np.sin(z[1,0]))/l + (alpha*z[3,0]+np.tanh(z[3,0])*F_f2)/m_p*l*l + (np.cos(z[1,0])/l)*(m_p*g*np.sin(z[1,0])*np.cos(z[1,0])+((alpha*z[3,0]+np.tanh(z[3,0])*F_f2)/l)*np.cos(z[1,0])-m_p*l*z[3,0]**2*np.sin(z[1,0])+np.tanh(z[2,0])*F_f1-u)/(m_c+m_p-m_p*np.cos(z[1,0])**2)
     return np.array([[z1dot], [z2dot], [z3dot], [z4dot]])
 
 ###################################################
@@ -50,35 +50,34 @@ def f(z, K):
 ###################################################
 
 # Defining constants for the system
-mp = 0.25   #kg     Mass of pendulum
-mc = 6.28   #kg     Mass of cart
-g = 9.82    #m/s^2  Gravitational acceleration
-l = 0.282   #m      Length of rod
-km = 0.0934 #Nm/A   Motorconstant
-r = 0.028   #m      Radius of pulley-gear
-a1 = 0.0005 #       Viscous friction coeffecient
-Ffc = 3.2   #       Couloumb friction coeffecient
-Ffp = 0.0041#       F_fp
+m_p = 0.25      #kg     Pendulum mass
+m_c = 6.28      #kg     Cart mass
+g = 9.82        #m/s^2  Gravitational acceleration
+l = 0.282       #m      Pendulum rod length
+K_m = 0.0934    #Nm/A   Torque constant
+r_pr = 0.028    #m      Pulley radius
+alpha = 0.0005  #       Pendulum drag coeffecient
+F_f1 = 3.2      #       Cart Couloumb force
+F_f2 = 0.0041   #       Pendulum Couloumb force
 
 # Initial states
-z0 = np.array([[0],         # x_0
-               [0.15],      # theta_0
+z_0 = np.array([[0],        # x_0
+               [np.pi/8],   # theta_0 (Change to 0.15 to match data)
                [0],         # xdot_0
                [0]])        # thetadot_0
 
 use_data = True             # Whether to use data or not
-if use_data:
-    data_t, axs = DP.plot("data\Bryson20nr2.txt")  # Save time data and get plots
 
 # Define time values need to perform RK4 and plotting
 if use_data:        # Create time values from data
+    data_t, axs = DP.plot("data/Bryson20nr2.txt")  # Save time data and get plots
     t0 = data_t[0]          # s
     t_final = data_t[-1]    # s
 else:               # If not from data, create custom time values and a new figure
+    fig, axs = plt.subplots(2, 2, figsize=(16/2, 9/2))  # Create new subplots in a 2 by 2 grid
     t0 = 0                  # s
     t_final = 3             # s
-    fig, axs = plt.subplots(2, 2, figsize=(16/2, 9/2))  # Create new subplots in a 2 by 2 grid
-N = 10000       # Number of steps
+N = 10000       # Number of RK4 steps
 
 ###################################################
 #
@@ -88,14 +87,14 @@ N = 10000       # Number of steps
 
 A = np.array([[0, 0, 1, 0],     # A-matrix
               [0, 0, 0, 1],
-              [0, (-mp*g)/mc, (Ffc)/mc, (a1+Ffp)/(mc*l)],
-              [0, g*(mc-mp)/(mc*l), Ffc/(mc*l), (a1+Ffp)*(mc+mp)/(mp*mc*l*l)]])
+              [0, (-m_p*g)/m_c, (F_f1)/m_c, (alpha+F_f2)/(m_c*l)],
+              [0, g*(m_c-m_p)/(m_c*l), F_f1/(m_c*l), (alpha+F_f2)*(m_c+m_p)/(m_p*m_c*l*l)]])
 B = np.array([[0],              # B-vector
               [0],
-              [-1/mc],
-              [-1/(l*mc)]])
+              [-1/m_c],
+              [-1/(l*m_c)]])
 Q = np.diag([5000, 1, 1, 1])    # Q-matrix
-R = np.array([0.005])            # R-scalar
+R = np.array([0.01])            # R-scalar
 
 ###################################################
 #
@@ -105,16 +104,16 @@ R = np.array([0.005])            # R-scalar
 
 # Perform LQR with python's control-module
 K, S, E = control.lqr(A, B, Q, R)
-print(K)
-print(E)
+print(f"The gain matrix is calculated as:\n{K}\n")
+print(f"The eigenvalues for (A-BK) are:\n{E}\n")
 
-t, z = RK4(f, K, t0, z0, t_final, N)   # Perform RK4 and save results
+t, z = RK4(f, K, t0, z_0, t_final, N)   # Perform RK4 and save results
 
 # Calculate the current input from each state-vector in z
-curr = (K.dot(z)*r/km).flatten()    # i = K * z * r / km, uses .flatten() to transform the 3D array result into 1D array
+curr = (K.dot(z)*r_pr/K_m).flatten()    # i = K * z * r / K_m, uses .flatten() to transform the 3D array result into 1D array
 
-print(np.max(abs(z[:,0])))  # Largest cart movement
-print(np.max(abs(curr)))    # Highest current input
+print(f"The largest deviation from 0 of the cart is:\n{np.max(abs(z[:,0]))}\n") # Largest cart movement
+print(f"The highest current input is:\n{np.max(abs(curr))}\n")                  # Highest current input
 
 ###################################################
 #

@@ -14,7 +14,7 @@ def midling(array, k):          # k'th order averaging filter function. Takes an
         for j in range(k):      # The i'th and the k-1 previous entries in the inputarray is summed
             x += array[i-j]
         midlet[i] = x/k         # and is divided with k. The i'th averaged entry is now assigned to the i'th element in "midlet"
-    for i in range((k-1)):      # To avoid the first k-1 entries to be 0, they are set to their matching entries of the inputarray
+    for i in range((k-1)):      # To avoid the first k-1 entries being 0, they are set to an average of the first i entries, for each i in range(k-1)
         midlet[i]=np.sum(array[:i+1])/(i+1)
     return midlet               # Returns the averaged values
 
