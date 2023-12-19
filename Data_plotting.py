@@ -21,7 +21,7 @@ def midling(array, k):          # k'th order averaging filter function. Takes an
 def plot(filepath):
     SAMPLING_TIME = 0.00667 # s
     # Load data from 'data/<filename>' into the data variable
-    data = pd.read_csv(filepath).iloc[:,0:2][0:2900] # Limit for 'Bryson20nr2.txt' data at the point where the pendulum is stabilized
+    data = pd.read_csv(filepath).iloc[:,0:2]# Load the data as a 2 arrays
     data_points = len(data.iloc[:,0])       # Saves number of data entries
     data_cart_pos = []                      # List for cart position from the data
     data_angle = []                         # List for angle of pendulum from the data

@@ -70,7 +70,7 @@ use_data = True             # Whether to use data or not
 
 # Define time values need to perform RK4 and plotting
 if use_data:        # Create time values from data
-    data_t, axs = DP.plot("data/Bryson20nr2.txt")  # Save time data and get plots
+    data_t, axs = DP.plot("data/R0.01.txt")  # Save time data and get plots
     t0 = data_t[0]          # s
     t_final = data_t[-1]    # s
 else:               # If not from data, create custom time values and a new figure
