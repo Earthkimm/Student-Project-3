@@ -1,7 +1,8 @@
 """
 This module plots a single simulation either with or without data.
 Change Q and R to match the data from the filepath in DP.plot(<filepath>).
-If no data is wished change 'use_data' to 'False'.
+If a simulation without experimental data is wished, change 'use_data' to 'False' (line 70).
+If 'use_data' is set to 'True' remember to change the filepath in line 74 to the wished data.
 """
 import numpy as np
 import matplotlib.pyplot as plt

@@ -42,7 +42,7 @@ def obs(A, C, n):
         obs = np.concatenate((obs, M), axis = 0)    # Input the calculated submatrix to the observability-matrix
     return obs, np.linalg.matrix_rank(obs)          # Return the observability-matrix and it's rank
 
-cont_matrix = cont(A, B, n)     # Calculate the controllability-matrix
+cont_matrix = cont(A, B, n)     # Calculate the controllability-matrix 
 obs_matrix = obs(A, C, n)       # Calculate the observability-matrix
 
 print(f'Controllabillity matrix:\n {cont_matrix[0]} \n Rank of controllability matrix: {cont_matrix[1]}\n')

@@ -1,6 +1,6 @@
 """
 This module is to be called from 'Simulering.py' to create plots of data.
-If a plot of only data is wanted, there are 2 outcommented lines at the bottom of the script for this.
+If a plot of only data is wanted, there are 2 outcommented lines at the bottom of the script for this. 
 """
 import numpy as np
 import pandas as pd
